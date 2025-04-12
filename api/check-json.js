@@ -3,9 +3,9 @@
 const puppeteer = require('puppeteer-core');
 const fetch = require('node-fetch');
 
-const BROWSERLESS_API_KEY = 'S71NvUhplRs28S1e261183f18fba337f9588c4a765';
-const ZAPIER_WEBHOOK_URL = 'https://hooks.zapier.com/hooks/catch/19276363/20f1knc/';
-const TARGET_URL = 'https://competitioncorner.net/api2/v1/reports/organizer/642631/athletesdata/json?status=live&eventIds=16070';
+const BROWSERLESS_API_KEY = process.env.BROWSERLESS_API_KEY;
+const ZAPIER_WEBHOOK_URL = process.env.ZAPIER_WEBHOOK_URL;
+const TARGET_URL = process.env.TARGET_URL;
 
 // In-memory cache (will reset every time Vercel spins down)
 let cachedJSON = null;
@@ -18,7 +18,12 @@ module.exports = async (req, res) => {
   const page = await browser.newPage();
 
   try {
-    await page.goto(TARGET_URL, { waitUntil: 'networkidle2' });
+    await page.authenticate({
+        username: process.env.BASIC_AUTH_USERNAME,
+        password: process.env.BASIC_AUTH_PASSWORD,
+      });
+      
+      await page.goto(TARGET_URL, { waitUntil: 'networkidle2' });
 
     const bodyText = await page.evaluate(() => document.body.innerText);
     const newJSON = JSON.parse(bodyText);
