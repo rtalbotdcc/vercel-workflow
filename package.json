@@ -1,0 +1,7 @@
+{
+    "dependencies": {
+      "puppeteer-core": "^22.7.1",
+      "node-fetch": "^2.6.7"
+    }
+  }
+  
